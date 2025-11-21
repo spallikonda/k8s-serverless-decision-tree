@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes vs Serverless Decision Tree</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const ChevronRight = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        );
+
+        const RefreshCw = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+        );
+
+        const CheckCircle = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        );
+
+        const XCircle = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+        );
+
+        const DecisionTree = () => {
+            const [currentNode, setCurrentNode] = useState('start');
+            const [path, setPath] = useState([]);
+            const [answers, setAnswers] = useState({});
+
+            const nodes = {
+                start: {
+                    question: "What is your primary workload type?",
+                    options: [
+                        { label: "APIs / HTTP Services", next: "api_traffic", key: "workload_api" },
+                        { label: "Background Jobs / Event Processing", next: "job_duration", key: "workload_jobs" },
+                        { label: "Real-time / Streaming Data", next: "streaming_type", key: "workload_streaming" },
+                        { label: "Stateful Applications (Databases, Caches)", next: "result_k8s_stateful", key: "workload_stateful" },
+                        { label: "Scheduled Tasks / Cron Jobs", next: "cron_complexity", key: "workload_cron" }
+                    ]
+                },
+                api_traffic: {
+                    question: "What is your API traffic pattern?",
+                    options: [
+                        { label: "Sporadic / Unpredictable (can go to zero)", next: "latency_tolerance", key: "traffic_sporadic" },
+                        { label: "Steady / Predictable traffic", next: "api_latency_req", key: "traffic_steady" },
+                        { label: "High burst traffic with periods of low usage", next: "latency_tolerance", key: "traffic_burst" },
+                        { label: "Sustained high traffic 24/7", next: "result_k8s_high_traffic", key: "traffic_sustained" }
+                    ]
+                },
+                latency_tolerance: {
+                    question: "Can you tolerate cold start latency (100ms - 3s)?",
+                    options: [
+                        { label: "Yes, acceptable for my use case", next: "result_serverless_api", key: "latency_ok" },
+                        { label: "No, need consistent sub-100ms response", next: "result_k8s_latency", key: "latency_critical" },
+                        { label: "Depends on endpoint - mixed", next: "result_hybrid_api", key: "latency_mixed" }
+                    ]
+                },
+                api_latency_req: {
+                    question: "What are your latency requirements?",
+                    options: [
+                        { label: "Sub-50ms p99 latency required", next: "result_k8s_latency", key: "latency_strict" },
+                        { label: "100-500ms acceptable", next: "result_serverless_steady", key: "latency_relaxed" }
+                    ]
+                },
+                job_duration: {
+                    question: "What is the typical job execution time?",
+                    options: [
+                        { label: "< 5 minutes", next: "job_frequency", key: "duration_short" },
+                        { label: "5-15 minutes", next: "job_complexity", key: "duration_medium" },
+                        { label: "> 15 minutes", next: "result_k8s_long_running", key: "duration_long" }
+                    ]
+                },
+                job_frequency: {
+                    question: "How frequently do jobs run?",
+                    options: [
+                        { label: "Constantly / High throughput", next: "result_k8s_job_volume", key: "freq_high" },
+                        { label: "Intermittent / Event-driven", next: "result_serverless_jobs", key: "freq_intermittent" }
+                    ]
+                },
+                job_complexity: {
+                    question: "Can jobs be broken into smaller chunks?",
+                    options: [
+                        { label: "Yes, easily decomposable", next: "result_serverless_chunked", key: "decompose_yes" },
+                        { label: "No, must run as single unit", next: "result_k8s_monolithic", key: "decompose_no" }
+                    ]
+                },
+                streaming_type: {
+                    question: "What type of real-time processing?",
+                    options: [
+                        { label: "WebSockets / Long-lived connections", next: "result_k8s_websocket", key: "stream_websocket" },
+                        { label: "Event streams (Kafka, EventHub, etc.)", next: "stream_complexity", key: "stream_events" },
+                        { label: "Video/Audio streaming", next: "result_k8s_media", key: "stream_media" }
+                    ]
+                },
+                stream_complexity: {
+                    question: "Stream processing characteristics?",
+                    options: [
+                        { label: "Simple transformations per event", next: "result_serverless_stream", key: "stream_simple" },
+                        { label: "Complex stateful processing / windowing", next: "result_k8s_stateful_stream", key: "stream_complex" }
+                    ]
+                },
+                cron_complexity: {
+                    question: "Scheduled task characteristics?",
+                    options: [
+                        { label: "Simple, independent tasks", next: "result_serverless_cron", key: "cron_simple" },
+                        { label: "Complex workflows / orchestration needed", next: "cron_duration_check", key: "cron_complex" }
+                    ]
+                },
+                cron_duration_check: {
+                    question: "Task execution time?",
+                    options: [
+                        { label: "< 10 minutes", next: "result_serverless_orchestrated", key: "cron_short" },
+                        { label: "> 10 minutes", next: "result_k8s_cron", key: "cron_long" }
+                    ]
+                },
+                result_serverless_api: {
+                    result: "Serverless Functions",
+                    recommendation: "Azure Functions / AWS Lambda",
+                    reasoning: [
+                        "Sporadic traffic pattern benefits from pay-per-use pricing",
+                        "Auto-scaling from zero reduces costs during idle periods",
+                        "Cold start latency is acceptable for your use case",
+                        "No infrastructure management overhead"
+                    ],
+                    considerations: [
+                        "Implement warming strategies for critical endpoints",
+                        "Use provisioned concurrency for baseline traffic",
+                        "Monitor cold start metrics closely"
+                    ],
+                    confidence: "high"
+                },
+                result_serverless_steady: {
+                    result: "Serverless Functions (with considerations)",
+                    recommendation: "Azure Functions / AWS Lambda with Provisioned Concurrency",
+                    reasoning: [
+                        "Steady traffic can use provisioned concurrency to eliminate cold starts",
+                        "Simpler operations than K8s",
+                        "Automatic scaling for traffic spikes"
+                    ],
+                    considerations: [
+                        "Cost compare provisioned concurrency vs K8s for your traffic volume",
+                        "May hit function execution limits at very high scale",
+                        "Consider K8s if sustained high traffic makes serverless expensive"
+                    ],
+                    confidence: "medium"
+                },
+                result_hybrid_api: {
+                    result: "Hybrid Approach",
+                    recommendation: "K8s for latency-critical, Serverless for others",
+                    reasoning: [
+                        "Use K8s for endpoints requiring consistent low latency",
+                        "Use serverless for less critical endpoints with variable load",
+                        "Optimize cost and performance for each use case"
+                    ],
+                    considerations: [
+                        "Manage two deployment paradigms",
+                        "Shared authentication/authorization strategy needed",
+                        "API Gateway can route to both backends"
+                    ],
+                    confidence: "high"
+                },
+                result_k8s_latency: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes (AKS / EKS)",
+                    reasoning: [
+                        "Consistent sub-100ms latency requires always-warm containers",
+                        "Cold starts incompatible with strict latency SLAs",
+                        "Fine-grained control over resource allocation and scaling"
+                    ],
+                    considerations: [
+                        "Implement horizontal pod autoscaling",
+                        "Use readiness/liveness probes",
+                        "Consider service mesh for advanced traffic management"
+                    ],
+                    confidence: "high"
+                },
+                result_k8s_high_traffic: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes (AKS / EKS)",
+                    reasoning: [
+                        "Sustained high traffic makes serverless cost-prohibitive",
+                        "Better cost efficiency with reserved capacity",
+                        "More predictable pricing model",
+                        "No cold start concerns with always-running pods"
+                    ],
+                    considerations: [
+                        "Implement proper resource requests/limits",
+                        "Use cluster autoscaler for node management",
+                        "Consider spot instances for cost optimization"
+                    ],
+                    confidence: "high"
+                },
+                result_serverless_jobs: {
+                    result: "Serverless Functions",
+                    recommendation: "Azure Functions / AWS Lambda with Queue Triggers",
+                    reasoning: [
+                        "Event-driven architecture is perfect fit for serverless",
+                        "Pay only for job execution time",
+                        "Automatic scaling based on queue depth",
+                        "No idle capacity costs"
+                    ],
+                    considerations: [
+                        "Monitor execution duration to stay under limits",
+                        "Use dead letter queues for failed jobs",
+                        "Consider function timeout settings"
+                    ],
+                    confidence: "high"
+                },
+                result_k8s_job_volume: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes with Job/CronJob resources",
+                    reasoning: [
+                        "High throughput jobs more cost-effective on K8s",
+                        "Better control over resource allocation",
+                        "No function execution limits",
+                        "Can optimize for sustained workload"
+                    ],
+                    considerations: [
+                        "Use Kubernetes Jobs or CronJobs",
+                        "Implement proper cleanup of completed jobs",
+                        "Consider KEDA for event-driven autoscaling"
+                    ],
+                    confidence: "high"
+                },
+                result_k8s_long_running: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes (AKS / EKS)",
+                    reasoning: [
+                        "Execution time exceeds serverless function limits (15 min)",
+                        "Need long-running process support",
+                        "Better suited for batch processing jobs"
+                    ],
+                    considerations: [
+                        "Use Kubernetes Jobs for batch workloads",
+                        "Consider breaking into smaller steps if possible",
+                        "Implement checkpointing for fault tolerance"
+                    ],
+                    confidence: "high"
+                },
+                result_serverless_chunked: {
+                    result: "Serverless Functions",
+                    recommendation: "Azure Functions / AWS Lambda with orchestration",
+                    reasoning: [
+                        "Jobs can be decomposed to fit within function limits",
+                        "Use Durable Functions (Azure) or Step Functions (AWS) for orchestration",
+                        "Cost-effective for intermittent workloads"
+                    ],
+                    considerations: [
+                        "Design proper job chunking strategy",
+                        "Implement idempotency for retries",
+                        "Monitor orchestration costs"
+                    ],
+                    confidence: "medium"
+                },
+                result_k8s_monolithic: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes (AKS / EKS)",
+                    reasoning: [
+                        "Monolithic jobs don't fit serverless model",
+                        "Need long execution time support",
+                        "Better control over job lifecycle"
+                    ],
+                    considerations: [
+                        "Use Kubernetes Jobs or StatefulSets",
+                        "Implement proper monitoring and alerting",
+                        "Consider if job can be re-architected for serverless"
+                    ],
+                    confidence: "high"
+                },
+                result_k8s_stateful: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes with StatefulSets",
+                    reasoning: [
+                        "Stateful workloads require persistent storage and stable network identities",
+                        "Databases, caches, and message brokers need K8s features",
+                        "Serverless is fundamentally stateless"
+                    ],
+                    considerations: [
+                        "Use StatefulSets for ordered deployment",
+                        "Implement proper backup strategies",
+                        "Consider managed services (RDS, Cosmos DB) instead of self-hosting"
+                    ],
+                    confidence: "high"
+                },
+                result_k8s_websocket: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes (AKS / EKS)",
+                    reasoning: [
+                        "WebSockets require persistent connections",
+                        "Serverless functions have timeout limits",
+                        "Need stable endpoints for connection management"
+                    ],
+                    considerations: [
+                        "Use sticky sessions for connection routing",
+                        "Implement proper connection draining",
+                        "Consider using SignalR/Socket.io with Redis backplane"
+                    ],
+                    confidence: "high"
+                },
+                result_serverless_stream: {
+                    result: "Serverless Functions",
+                    recommendation: "Azure Functions / AWS Lambda with event triggers",
+                    reasoning: [
+                        "Simple per-event processing fits serverless model",
+                        "Auto-scales with event volume",
+                        "No infrastructure to manage"
+                    ],
+                    considerations: [
+                        "Monitor processing latency",
+                        "Implement proper error handling and DLQ",
+                        "Be aware of concurrent execution limits"
+                    ],
+                    confidence: "high"
+                },
+                result_k8s_stateful_stream: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes with streaming frameworks",
+                    reasoning: [
+                        "Stateful processing requires maintaining state across events",
+                        "Windowing and aggregations need long-running processes",
+                        "Better suited for Apache Flink, Spark Streaming, etc."
+                    ],
+                    considerations: [
+                        "Use specialized streaming frameworks",
+                        "Implement proper state management",
+                        "Consider managed streaming services"
+                    ],
+                    confidence: "high"
+                },
+                result_k8s_media: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes (AKS / EKS)",
+                    reasoning: [
+                        "Media streaming requires specialized infrastructure",
+                        "Need control over network and resource allocation",
+                        "Often requires GPUs or specialized hardware"
+                    ],
+                    considerations: [
+                        "Use node selectors for GPU nodes if needed",
+                        "Implement CDN integration",
+                        "Consider managed media services"
+                    ],
+                    confidence: "high"
+                },
+                result_serverless_cron: {
+                    result: "Serverless Functions",
+                    recommendation: "Azure Functions / AWS Lambda with timer triggers",
+                    reasoning: [
+                        "Simple scheduled tasks are ideal for serverless",
+                        "No idle costs between executions",
+                        "Easy to manage and update"
+                    ],
+                    considerations: [
+                        "Ensure execution time under limits",
+                        "Implement idempotency",
+                        "Monitor execution history"
+                    ],
+                    confidence: "high"
+                },
+                result_serverless_orchestrated: {
+                    result: "Serverless Functions with Orchestration",
+                    recommendation: "Azure Durable Functions / AWS Step Functions",
+                    reasoning: [
+                        "Complex workflows can use serverless orchestration",
+                        "Durable Functions/Step Functions handle state management",
+                        "Cost-effective for periodic execution"
+                    ],
+                    considerations: [
+                        "Learn orchestration patterns",
+                        "Monitor orchestration costs",
+                        "Implement proper error handling and retries"
+                    ],
+                    confidence: "medium"
+                },
+                result_k8s_cron: {
+                    result: "Kubernetes",
+                    recommendation: "Kubernetes CronJobs",
+                    reasoning: [
+                        "Long-running scheduled tasks exceed serverless limits",
+                        "Better control over complex workflows",
+                        "Can run arbitrary containers"
+                    ],
+                    considerations: [
+                        "Use Kubernetes CronJob resource",
+                        "Implement job cleanup policies",
+                        "Monitor job completion status"
+                    ],
+                    confidence: "high"
+                }
+            };
+
+            const handleChoice = (option) => {
+                setAnswers({ ...answers, [option.key]: option.label });
+                setPath([...path, { node: currentNode, choice: option.label }]);
+                setCurrentNode(option.next);
+            };
+
+            const reset = () => {
+                setCurrentNode('start');
+                setPath([]);
+                setAnswers({});
+            };
+
+            const goBack = () => {
+                if (path.length > 0) {
+                    const newPath = [...path];
+                    const lastStep = newPath.pop();
+                    setPath(newPath);
+                    setCurrentNode(lastStep.node);
+                    
+                    const newAnswers = { ...answers };
+                    const node = nodes[lastStep.node];
+                    const option = node.options.find(o => o.label === lastStep.choice);
+                    if (option) {
+                        delete newAnswers[option.key];
+                    }
+                    setAnswers(newAnswers);
+                }
+            };
+
+            const node = nodes[currentNode];
+            const isResult = currentNode.startsWith('result_');
+
+            const getConfidenceColor = (confidence) => {
+                switch(confidence) {
+                    case 'high': return 'bg-green-100 text-green-800 border-green-300';
+                    case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+                    case 'low': return 'bg-orange-100 text-orange-800 border-orange-300';
+                    default: return 'bg-gray-100 text-gray-800 border-gray-300';
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="bg-white rounded-lg shadow-xl p-8">
+                            <div className="flex justify-between items-start mb-8">
+                                <div>
+                                    <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                                        Kubernetes vs Serverless Decision Tree
+                                    </h1>
+                                    <p className="text-gray-600">
+                                        Answer questions to determine the best architecture for your workload
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={reset}
+                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                >
+                                    <RefreshCw />
+                                    Reset
+                                </button>
+                            </div>
+
+                            {path.length > 0 && (
+                                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Your Path:</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {path.map((step, idx) => (
+                                            <span key={idx} className="text-xs bg-white px-3 py-1 rounded-full text-gray-600 border border-gray-200">
+                                                {step.choice}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {!isResult ? (
+                                <div className="space-y-6">
+                                    <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-6 rounded-lg border-l-4 border-indigo-500">
+                                        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                                            {node.question}
+                                        </h2>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        {node.options.map((option, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleChoice(option)}
+                                                className="w-full text-left p-4 bg-white border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 rounded-lg transition-all duration-200 flex items-center justify-between group"
+                                            >
+                                                <span className="text-gray-700 font-medium">{option.label}</span>
+                                                <ChevronRight />
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {path.length > 0 && (
+                                        <button
+                                            onClick={goBack}
+                                            className="mt-4 text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                                        >
+                                            ← Go Back
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    <div className={`p-6 rounded-lg border-2 ${getConfidenceColor(node.confidence)}`}>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <CheckCircle />
+                                            <h2 className="text-2xl font-bold">
+                                                Recommendation: {node.result}
+                                            </h2>
+                                        </div>
+                                        <p className="text-lg font-semibold mt-2">{node.recommendation}</p>
+                                        <div className="mt-3 inline-block px-3 py-1 bg-white rounded-full text-sm font-medium">
+                                            Confidence: {node.confidence.toUpperCase()}
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
+                                        <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                            <CheckCircle />
+                                            Why This Choice?
+                                        </h3>
+                                        <ul className="space-y-2">
+                                            {node.reasoning.map((reason, idx) => (
+                                                <li key={idx} className="text-gray-700 flex items-start gap-2">
+                                                    <span className="text-green-600 mt-1">•</span>
+                                                    <span>{reason}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+
+                                    <div className="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-lg">
+                                        <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                            <XCircle />
+                                            Important Considerations
+                                        </h3>
+                                        <ul className="space-y-2">
+                                            {node.considerations.map((consideration, idx) => (
+                                                <li key={idx} className="text-gray-700 flex items-start gap-2">
+                                                    <span className="text-amber-600 mt-1">•</span>
+                                                    <span>{consideration}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+
+                                    <div className="flex gap-4">
+                                        <button
+                                            onClick={goBack}
+                                            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors"
+                                        >
+                                            ← Change Last Answer
+                                        </button>
+                                        <button
+                                            onClick={reset}
+                                            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                                        >
+                                            <RefreshCw />
+                                            Start Over
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mt-6 text-center text-sm text-gray-600">
+                            <p>This is a guidance tool. Always evaluate specific requirements, costs, and organizational constraints.</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<DecisionTree />);
+    </script>
+</body>
+</html>
