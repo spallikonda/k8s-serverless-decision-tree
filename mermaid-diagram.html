@@ -17,53 +17,53 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <div class="min-h-screen p-6">
+    <div class="min-h-screen p-4 sm:p-6">
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
-            <div class="bg-white rounded-lg shadow-xl p-8 mb-6">
-                <div class="flex justify-between items-start mb-4">
+            <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 md:p-8 mb-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
                             Kubernetes vs Serverless Decision Diagram
                         </h1>
-                        <p class="text-gray-600">
+                        <p class="text-sm sm:text-base text-gray-600">
                             Visual flowchart of all decision paths
                         </p>
                     </div>
-                    <a href="index.html" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 font-medium">
-                        ← Back to Home
+                    <a href="index.html" class="w-full sm:w-auto text-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 font-medium text-sm sm:text-base">
+                        ← Home
                     </a>
                 </div>
                 
-            
+        
             </div>
 
             <!-- Legend -->
-            <div class="bg-white rounded-lg shadow-xl p-6 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Legend</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 mb-6">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4">Legend</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-6 h-6 bg-green-500 rounded border-2 border-green-700"></div>
-                        <span class="text-gray-700 font-medium">Serverless Functions</span>
+                        <div class="w-6 h-6 bg-green-500 rounded border-2 border-green-700 flex-shrink-0"></div>
+                        <span class="text-sm sm:text-base text-gray-700 font-medium">Serverless Functions</span>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div class="w-6 h-6 bg-blue-600 rounded border-2 border-blue-800"></div>
-                        <span class="text-gray-700 font-medium">Kubernetes</span>
+                        <div class="w-6 h-6 bg-blue-600 rounded border-2 border-blue-800 flex-shrink-0"></div>
+                        <span class="text-sm sm:text-base text-gray-700 font-medium">Kubernetes</span>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div class="w-6 h-6 bg-orange-500 rounded border-2 border-orange-700"></div>
-                        <span class="text-gray-700 font-medium">Hybrid Approach</span>
+                        <div class="w-6 h-6 bg-orange-500 rounded border-2 border-orange-700 flex-shrink-0"></div>
+                        <span class="text-sm sm:text-base text-gray-700 font-medium">Hybrid Approach</span>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div class="w-6 h-6 bg-blue-100 rounded border-2 border-blue-400"></div>
-                        <span class="text-gray-700 font-medium">Decision Points</span>
+                        <div class="w-6 h-6 bg-blue-100 rounded border-2 border-blue-400 flex-shrink-0"></div>
+                        <span class="text-sm sm:text-base text-gray-700 font-medium">Decision Points</span>
                     </div>
                 </div>
             </div>
 
             <!-- Diagram Container -->
-            <div class="bg-white rounded-lg shadow-xl p-8 mb-6">
-                <div class="bg-gray-50 rounded-lg p-6 overflow-x-auto border border-gray-200">
+            <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 md:p-8 mb-6">
+                <div class="bg-gray-50 rounded-lg p-3 sm:p-4 md:p-6 overflow-x-auto border border-gray-200">
                     <div class="mermaid">
 graph LR
     Start[What is your<br/>workload type?] --> API[APIs / HTTP Services]
@@ -133,26 +133,26 @@ graph LR
                 </div>
 
                 <!-- Zoom Controls -->
-                <div class="flex gap-3 mt-6 justify-center flex-wrap">
-                    <button onclick="zoomIn()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
+                <div class="flex gap-2 sm:gap-3 mt-4 sm:mt-6 justify-center flex-wrap">
+                    <button onclick="zoomIn()" class="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium text-sm sm:text-base">
                         🔍 Zoom In
                     </button>
-                    <button onclick="zoomOut()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
+                    <button onclick="zoomOut()" class="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium text-sm sm:text-base">
                         🔍 Zoom Out
                     </button>
-                    <button onclick="resetZoom()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium">
-                        ↺ Reset Zoom
+                    <button onclick="resetZoom()" class="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium text-sm sm:text-base">
+                        ↺ Reset
                     </button>
-                    <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium">
-                        🖨️ Print Diagram
+                    <button onclick="window.print()" class="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm sm:text-base">
+                        🖨️ Print
                     </button>
                 </div>
             </div>
 
             <!-- Info Box -->
-            <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 shadow-lg">
-                <h3 class="font-semibold text-gray-800 mb-3 text-lg">💡 How to Use This Diagram</h3>
-                <p class="text-gray-700 leading-relaxed">
+            <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4 sm:p-6 shadow-lg">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-3">💡 How to Use This Diagram</h3>
+                <p class="text-sm sm:text-base text-gray-700 leading-relaxed">
                     Start from the left with your workload type and follow the decision paths to the right. 
                     Each path leads to a recommendation (Serverless, Kubernetes, or Hybrid) with specific reasoning. 
                     Green nodes indicate Serverless recommendations, blue nodes indicate Kubernetes, and orange nodes 
@@ -162,8 +162,8 @@ graph LR
             </div>
 
             <!-- Footer -->
-            <div class="text-center mt-8 text-gray-600">
-                <p class="text-sm">This is a guidance tool. Always evaluate specific requirements, costs, and organizational constraints.</p>
+            <div class="text-center mt-6 sm:mt-8 text-gray-600">
+                <p class="text-xs sm:text-sm">This is a guidance tool. Always evaluate specific requirements, costs, and organizational constraints.</p>
                 <p class="text-xs mt-2">Decision Tree v1.0 • November 2025</p>
             </div>
         </div>
