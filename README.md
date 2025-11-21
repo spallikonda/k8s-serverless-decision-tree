@@ -1,10 +1,10 @@
 # Kubernetes vs Serverless Decision Tree
 
-An interactive decision tree to help solution architects choose between Kubernetes and Serverless functions for cloud migrations.
+An interactive decision tree to help teams choose between Kubernetes and Serverless functions for cloud migrations.
 
 ## 🚀 Live Demo
 
-Visit: https://YOUR-USERNAME.github.io/k8s-serverless-decision-tree/
+Visit: https://spallikonda.github.io/k8s-serverless-decision-tree/
 
 ## 📋 Features
 
