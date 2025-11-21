@@ -19,60 +19,60 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <div class="container mx-auto px-6 py-12">
+    <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <!-- Header -->
-        <div class="text-center mb-16">
-            <h1 class="text-5xl font-bold text-gray-800 mb-4">
+        <div class="text-center mb-8 sm:mb-16">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
                 🎯 Kubernetes vs Serverless
             </h1>
-            <p class="text-xl text-gray-600 mb-2">
-                Decision Tools for teams planning to migrate their workloads to cloud and deciding between k8s Vs serverless
+            <p class="text-lg sm:text-xl text-gray-600 mb-2">
+                Decision Tools for Cloud Architects
             </p>
-            <p class="text-gray-500">
+            <p class="text-sm sm:text-base text-gray-500">
                 Choose the right architecture for your cloud migration
             </p>
         </div>
 
         <!-- Tool Cards -->
-        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
+        <div class="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto mb-8 sm:mb-12">
             <!-- Interactive Decision Tree Card -->
             <div class="card bg-white rounded-2xl shadow-xl overflow-hidden">
-                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 text-white">
-                    <div class="text-5xl mb-4">🌳</div>
-                    <h2 class="text-2xl font-bold mb-2">Interactive Decision Tree</h2>
-                    <p class="text-indigo-100">Step-by-step guided questions</p>
+                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 sm:p-8 text-white">
+                    <div class="text-4xl sm:text-5xl mb-4">🌳</div>
+                    <h2 class="text-xl sm:text-2xl font-bold mb-2">Interactive Decision Tree</h2>
+                    <p class="text-sm sm:text-base text-indigo-100">Step-by-step guided questions</p>
                 </div>
-                <div class="p-8">
-                    <p class="text-gray-600 mb-6 leading-relaxed">
+                <div class="p-6 sm:p-8">
+                    <p class="text-sm sm:text-base text-gray-600 mb-6 leading-relaxed">
                         Answer a series of questions about your workload to get personalized recommendations with detailed reasoning and implementation considerations.
                     </p>
                     <div class="space-y-3 mb-6">
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            <span class="text-gray-700">Step-by-step guidance</span>
+                            <span class="text-sm sm:text-base text-gray-700">Step-by-step guidance</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            <span class="text-gray-700">Detailed recommendations</span>
+                            <span class="text-sm sm:text-base text-gray-700">Detailed recommendations</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            <span class="text-gray-700">Implementation tips</span>
+                            <span class="text-sm sm:text-base text-gray-700">Implementation tips</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            <span class="text-gray-700">Path tracking</span>
+                            <span class="text-sm sm:text-base text-gray-700">Path tracking</span>
                         </div>
                     </div>
-                    <a href="interactive-wizard.html" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                    <a href="interactive.html" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors text-sm sm:text-base">
                         Start Interactive Tool →
                     </a>
                 </div>
@@ -80,13 +80,13 @@
 
             <!-- Visual Diagram Card -->
             <div class="card bg-white rounded-2xl shadow-xl overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-500 to-cyan-600 p-8 text-white">
-                    <div class="text-5xl mb-4">📊</div>
-                    <h2 class="text-2xl font-bold mb-2">Visual Decision Diagram</h2>
-                    <p class="text-blue-100">Complete flowchart overview</p>
+                <div class="bg-gradient-to-r from-blue-500 to-cyan-600 p-6 sm:p-8 text-white">
+                    <div class="text-4xl sm:text-5xl mb-4">📊</div>
+                    <h2 class="text-xl sm:text-2xl font-bold mb-2">Visual Decision Diagram</h2>
+                    <p class="text-sm sm:text-base text-blue-100">Complete flowchart overview</p>
                 </div>
-                <div class="p-8">
-                    <p class="text-gray-600 mb-6 leading-relaxed">
+                <div class="p-6 sm:p-8">
+                    <p class="text-sm sm:text-base text-gray-600 mb-6 leading-relaxed">
                         View the complete decision tree as a visual flowchart. Perfect for presentations, documentation, and getting a bird's-eye view of all decision paths.
                     </p>
                     <div class="space-y-3 mb-6">
@@ -115,7 +115,7 @@
                             <span class="text-gray-700">Color-coded paths</span>
                         </div>
                     </div>
-                    <a href="mermaid-diagram.html" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                    <a href="diagram.html" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors text-sm sm:text-base">
                         View Diagram →
                     </a>
                 </div>
@@ -124,9 +124,9 @@
 
         <!-- Info Section -->
         <div class="max-w-4xl mx-auto">
-            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
-                <h3 class="text-2xl font-bold text-gray-800 mb-4">📋 About These Tools</h3>
-                <div class="prose prose-lg text-gray-600">
+            <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">📋 About These Tools</h3>
+                <div class="prose prose-sm sm:prose-lg text-gray-600">
                     <p class="mb-4">
                         These decision tools help solution architects and cloud engineers make informed choices between 
                         Kubernetes and Serverless architectures (Azure Functions / AWS Lambda) for cloud migrations.
@@ -148,12 +148,39 @@
                 </div>
             </div>
 
-  
+            <!-- Quick Reference -->
+            <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-6 sm:p-8 border border-indigo-200">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4">🎨 Color Legend</h3>
+                <div class="grid sm:grid-cols-3 gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-green-500 rounded-lg flex-shrink-0"></div>
+                        <div>
+                            <div class="font-semibold text-gray-800 text-sm sm:text-base">Serverless</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Functions recommended</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex-shrink-0"></div>
+                        <div>
+                            <div class="font-semibold text-gray-800 text-sm sm:text-base">Kubernetes</div>
+                            <div class="text-xs sm:text-sm text-gray-600">K8s recommended</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-orange-500 rounded-lg flex-shrink-0"></div>
+                        <div>
+                            <div class="font-semibold text-gray-800 text-sm sm:text-base">Hybrid</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Mixed approach</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Footer -->
-        <div class="text-center mt-12 text-gray-600">
-            <p class="mb-2">Created for Solution Architects and Cloud Engineers</p>
-            <p class="text-sm">Version 1.0 • November 2025</p>
+        <div class="text-center mt-8 sm:mt-12 text-gray-600">
+            <p class="mb-2 text-sm sm:text-base">Created for Solution Architects and Cloud Engineers</p>
+            <p class="text-xs sm:text-sm">Version 1.0 • November 2025</p>
             <div class="mt-4">
                 <a href="https://github.com/spallikonda/k8s-serverless-decision-tree" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium">
                     View on GitHub →
