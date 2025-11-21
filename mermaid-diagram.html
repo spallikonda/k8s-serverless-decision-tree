@@ -3,287 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K8s vs Serverless Decision Tree</title>
+    <title>K8s vs Serverless Decision Diagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
         }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.95;
-        }
-        
-        .content {
-            padding: 40px;
-        }
-        
-        .legend {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 30px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .legend h3 {
-            color: #333;
-            margin-bottom: 16px;
-            font-size: 1.2rem;
-        }
-        
-        .legend-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .legend-box {
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            border: 2px solid;
-        }
-        
-        .legend-box.serverless {
-            background: #4CAF50;
-            border-color: #2E7D32;
-        }
-        
-        .legend-box.kubernetes {
-            background: #326CE5;
-            border-color: #1565C0;
-        }
-        
-        .legend-box.hybrid {
-            background: #FF9800;
-            border-color: #E65100;
-        }
-        
-        .legend-box.decision {
-            background: #E3F2FD;
-            border-color: #1976D2;
-        }
-        
-        .legend-text {
-            font-size: 0.95rem;
-            color: #555;
-            font-weight: 500;
-        }
-        
-        .diagram-wrapper {
-            background: #fafafa;
-            border-radius: 12px;
-            padding: 30px;
-            overflow-x: auto;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .mermaid {
-            display: flex;
-            justify-content: center;
-        }
-        
-        .controls {
-            margin-top: 24px;
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-        
-        .btn-secondary:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
-        }
-        
-        .info-box {
-            background: #e8f4f8;
-            border-left: 4px solid #2196F3;
-            padding: 20px;
-            margin-top: 30px;
-            border-radius: 8px;
-        }
-        
-        .info-box h4 {
-            color: #1976D2;
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-        }
-        
-        .info-box p {
-            color: #555;
-            line-height: 1.6;
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 24px;
-            background: #f8f9fa;
-            color: #666;
-            font-size: 0.9rem;
-            border-top: 1px solid #e0e0e0;
-        }
-        
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .header p {
-                font-size: 1rem;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .diagram-wrapper {
-                padding: 15px;
-            }
-        }
-        
-        /* Mermaid styling overrides */
         .mermaid svg {
             max-width: 100%;
             height: auto;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🎯 Kubernetes vs Serverless Decision Tree</h1>
-            <p>Visual guide for choosing the right cloud architecture</p>
-        </div>
-
-                  <!-- Quick Reference -->
-            <!-- <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-8 border border-indigo-200">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">🎨 Color Legend</h3>
-                <div class="grid md:grid-cols-3 gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-green-500 rounded-lg"></div>
-                        <div>
-                            <div class="font-semibold text-gray-800">Serverless</div>
-                            <div class="text-sm text-gray-600">Functions recommended</div>
-                        </div>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="min-h-screen p-6">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-xl p-8 mb-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                            Kubernetes vs Serverless Decision Diagram
+                        </h1>
+                        <p class="text-gray-600">
+                            Visual flowchart of all decision paths
+                        </p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-blue-600 rounded-lg"></div>
-                        <div>
-                            <div class="font-semibold text-gray-800">Kubernetes</div>
-                            <div class="text-sm text-gray-600">K8s recommended</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-orange-500 rounded-lg"></div>
-                        <div>
-                            <div class="font-semibold text-gray-800">Hybrid</div>
-                            <div class="text-sm text-gray-600">Mixed approach</div>
-                        </div>
-                    </div>
-                      <div class="flex items-center gap-3">
-                        <div class="legend-box decision"></div>
-                        <div>
-                            <div class="font-semibold text-gray-800">decision</div>
-                            <div class="text-sm text-gray-600">Decision Points</div>
-                        </div>
-                    </div>
+                    <a href="index.html" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 font-medium">
+                        ← Back to Home
+                    </a>
                 </div>
-            </div> -->
-        </div>
-        
-        <div class="content">
-            <div class="legend">
-                <h3>📊 Legend</h3>
-                <div class="legend-grid">
-                    <div class="legend-item">
-                        <div class="legend-box serverless"></div>
-                        <span class="legend-text">Serverless Functions</span>
+                
+                <!-- Navigation Pills -->
+                <div class="flex gap-3 mt-6">
+                    <a href="interactive.html" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors font-medium">
+                        🌳 Interactive Tool
+                    </a>
+                    <a href="diagram.html" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">
+                        📊 Visual Diagram
+                    </a>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="bg-white rounded-lg shadow-xl p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Legend</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 bg-green-500 rounded border-2 border-green-700"></div>
+                        <span class="text-gray-700 font-medium">Serverless Functions</span>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-box kubernetes"></div>
-                        <span class="legend-text">Kubernetes</span>
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 bg-blue-600 rounded border-2 border-blue-800"></div>
+                        <span class="text-gray-700 font-medium">Kubernetes</span>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-box hybrid"></div>
-                        <span class="legend-text">Hybrid Approach</span>
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 bg-orange-500 rounded border-2 border-orange-700"></div>
+                        <span class="text-gray-700 font-medium">Hybrid Approach</span>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-box decision"></div>
-                        <span class="legend-text">Decision Points</span>
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 bg-blue-100 rounded border-2 border-blue-400"></div>
+                        <span class="text-gray-700 font-medium">Decision Points</span>
                     </div>
                 </div>
             </div>
-            
-            <div class="diagram-wrapper">
-                <div class="mermaid">
+
+            <!-- Diagram Container -->
+            <div class="bg-white rounded-lg shadow-xl p-8 mb-6">
+                <div class="bg-gray-50 rounded-lg p-6 overflow-x-auto border border-gray-200">
+                    <div class="mermaid">
 graph LR
     Start[What is your<br/>workload type?] --> API[APIs / HTTP Services]
     Start --> Jobs[Background Jobs /<br/>Event Processing]
@@ -348,30 +137,43 @@ graph LR
     class Hybrid_API hybrid
     class Traffic,ColdStart,LatencyReq,Duration,Frequency,Decompose,StreamType,StreamComplex,CronType,CronDuration decision
     class Start start
+                    </div>
+                </div>
+
+                <!-- Zoom Controls -->
+                <div class="flex gap-3 mt-6 justify-center flex-wrap">
+                    <button onclick="zoomIn()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
+                        🔍 Zoom In
+                    </button>
+                    <button onclick="zoomOut()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
+                        🔍 Zoom Out
+                    </button>
+                    <button onclick="resetZoom()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium">
+                        ↺ Reset Zoom
+                    </button>
+                    <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium">
+                        🖨️ Print Diagram
+                    </button>
                 </div>
             </div>
-            
-            <div class="controls">
-                <button class="btn btn-primary" onclick="window.print()">🖨️ Print Diagram</button>
-                <button class="btn btn-secondary" onclick="zoomIn()">🔍 Zoom In</button>
-                <button class="btn btn-secondary" onclick="zoomOut()">🔍 Zoom Out</button>
-                <button class="btn btn-secondary" onclick="resetZoom()">↺ Reset Zoom</button>
-            </div>
-            
-            <div class="info-box">
-                <h4>💡 How to Use This Decision Tree</h4>
-                <p>
-                    Start from the top and follow the decision paths based on your workload characteristics. 
-                    Each path leads to a recommendation (Serverless, Kubernetes, or Hybrid) with specific 
-                    reasoning. Green nodes indicate Serverless recommendations, blue nodes indicate Kubernetes, 
-                    and orange nodes indicate a hybrid approach. This is a guidance tool - always evaluate 
-                    your specific requirements, costs, and organizational constraints.
+
+            <!-- Info Box -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 shadow-lg">
+                <h3 class="font-semibold text-gray-800 mb-3 text-lg">💡 How to Use This Diagram</h3>
+                <p class="text-gray-700 leading-relaxed">
+                    Start from the left with your workload type and follow the decision paths to the right. 
+                    Each path leads to a recommendation (Serverless, Kubernetes, or Hybrid) with specific reasoning. 
+                    Green nodes indicate Serverless recommendations, blue nodes indicate Kubernetes, and orange nodes 
+                    indicate a hybrid approach. This is a guidance tool - always evaluate your specific requirements, 
+                    costs, and organizational constraints.
                 </p>
             </div>
-        </div>
-        
-        <div class="footer">
-            <p>Created for Solution Architects • Decision Tree v1.0 • November 2025</p>
+
+            <!-- Footer -->
+            <div class="text-center mt-8 text-gray-600">
+                <p class="text-sm">This is a guidance tool. Always evaluate specific requirements, costs, and organizational constraints.</p>
+                <p class="text-xs mt-2">Decision Tree v1.0 • November 2025</p>
+            </div>
         </div>
     </div>
 
@@ -411,7 +213,8 @@ graph LR
             const svg = document.querySelector('.mermaid svg');
             if (svg) {
                 svg.style.transform = `scale(${currentZoom})`;
-                svg.style.transformOrigin = 'top center';
+                svg.style.transformOrigin = 'top left';
+                svg.style.transition = 'transform 0.3s ease';
             }
         }
     </script>
